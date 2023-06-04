@@ -3,7 +3,7 @@ import "../dashboard/dashboard.css";
 import LTALogo from "../../assets/images/lta_logo.png";
 import Add from "../../assets/svg/Frame 2.svg";
 import dp from "../../assets/svg/Rectangle 2601.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Uni_Item from "../../components/university/uni_item";
 import {
@@ -25,7 +25,8 @@ import {
 import { ArrowForwardIcon, AttachmentIcon } from "@chakra-ui/icons";
 import { useContext } from "react";
 import { AppContext } from "../../context/app_context";
-import { createApplication } from "../../util/api";
+import { createApplication, getApplicationsOfUser } from "../../util/api";
+import { useMemo } from "react";
 
 const User = () => {
   const navigate = useNavigate();
@@ -41,15 +42,32 @@ const User = () => {
   const [form, setForm] = useState({});
   const [inTakeCheck,setInTakeCheck] = useState(false);
   const [applicationCheck,setApplicationCheck] = useState(false);
+  const [userApplications,setUserApplications] = useState([]);
 
   const handleActiveTab = (tab) => {
     setActiveTab(tab);
   };
+  const downloadApplications = async()=>{
+    try {
+      let applications = await getApplicationsOfUser(applicant._id);
+     // applications = applications.revesre();
+      setUserApplications(applications);
+    } catch (error) {
+      
+    }
+  }
+  useEffect(()=>{
+    console.log(userApplications);
+  },[userApplications]);
+  useEffect(()=>{
+    downloadApplications();
+  },[]);
 
   const onChangeForm = ({ target }) => {
     const { name, value } = target;
     setForm({ ...form, [name]: value });
   };
+ 
   const onChangeCheck = ({ target }) => {
     const { name, checked } = target;
     switch (name) {

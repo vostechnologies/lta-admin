@@ -12,3 +12,7 @@ export const createApplication = (body)=>adminLATClient({
     },
     data:body
 }).then(res=>res.data);
+export const getApplicationsOfUser = (id)=>adminLATClient({
+    url:`/application/getApplications/${id}`,
+    method: "GET"
+}).then(res=>res.data);
