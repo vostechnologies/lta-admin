@@ -6,6 +6,8 @@ import dp from "../../assets/svg/Rectangle 2601.svg";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Uni_Item from "../../components/university/uni_item";
+import Delete from "../../assets/svg/Delete_icon.svg"
+
 import {
   Button,
   IconButton,
@@ -204,7 +206,7 @@ const User = () => {
 
             <div
               className="applicants-container"
-              style={{ display: activeTab === "2" ? "block" : "none" }}
+              style={{ display: activeTab === "2" ? "flex" : "none" }}
             >
               <section className="applicants">
                 <section className="app-header">
@@ -285,7 +287,21 @@ const User = () => {
                   </div>
                 </section>
                 <section className="app-body">
-                  <div className="app-body-header">
+                  <table className="applications-container">
+                        <tr className="table-headers">
+                            <th className="first">University Name & Course</th>
+                            <th className="second">Application Status</th>
+                            <th className="third">Application Letter</th>
+                            <th className="fourth">Admission Status</th>
+                            <th className="fifth">Admission or Rejection Letter</th>
+                            <th>
+                              <img src= {Delete} alt="" style={{opacity:"0"}} />
+                            </th>
+                        </tr>
+                        <Uni_Item />
+
+                  </table>
+                  {/* <div className="app-body-header">
                     <div className="app-titles">University Name & Course</div>
                     <div className="app-titles">Application Status</div>
                     <div className="app-titles">Application Letter</div>
@@ -293,14 +309,14 @@ const User = () => {
                     <div className="app-titles">
                       Admission or Rejection Letter
                     </div>
-                  </div>
+                  </div> */}
+                  {/* <Uni_Item />
                   <Uni_Item />
                   <Uni_Item />
                   <Uni_Item />
                   <Uni_Item />
                   <Uni_Item />
-                  <Uni_Item />
-                  <Uni_Item />
+                  <Uni_Item /> */}
                 </section>
               </section>
             </div>

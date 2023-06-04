@@ -1,5 +1,12 @@
 import { adminLATClient } from "./api_socket";
 
+export const login = (cred) =>
+  ltaClient({
+    method: "POST",
+    url: `/auth/adminLogin`,
+    data: cred,
+  }).then((res) => res.data);
+
 export const getAllUsers = ()=>adminLATClient({
     url:`/auth/listAll`,
     method: "GET"
