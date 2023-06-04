@@ -37,7 +37,7 @@ const Applicants = () => {
                         <th>Name and Email ID</th>
                         <th>Contact</th>
                     </tr>
-                    {users.map(user=><App_Item user={user}/>)}
+                    {users.map((user,i)=><App_Item key={i} user={user}/>)}
                 </table>
                 
                 

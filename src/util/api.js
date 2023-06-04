@@ -1,7 +1,7 @@
 import { adminLATClient } from "./api_socket";
 
 export const login = (cred) =>
-  ltaClient({
+adminLATClient({
     method: "POST",
     url: `/auth/adminLogin`,
     data: cred,
@@ -23,3 +23,8 @@ export const getApplicationsOfUser = (id)=>adminLATClient({
     url:`/application/getApplications/${id}`,
     method: "GET"
 }).then(res=>res.data);
+export const validateToken = ()=>adminLATClient({
+    method: "GET",
+    url : `/auth/validateAdminToken`
+  }).then(res=>res.data);
+  
