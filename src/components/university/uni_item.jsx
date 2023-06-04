@@ -6,7 +6,7 @@ import { useRef } from "react";
 
 
 const Uni_Item = ({application}) => {
-	
+	const {_id} = application;
 	const file1Ref = useRef(null);
 	const file2Ref = useRef(null);
 
