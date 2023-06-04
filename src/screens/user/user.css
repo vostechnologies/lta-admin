@@ -9,6 +9,9 @@
     display: flex;
     gap: 24px;
 }
+.user .add-member{
+    cursor: pointer;
+}
 .user-dp > img{
     width: 65px;
     height: 65px;
@@ -142,4 +145,31 @@
 }
 .app-search{
     height: 41px;
+}
+.modal_add_application{
+    width: 60vw!important;
+    padding-left: 3rem;
+    display: grid;
+    grid-template-columns: auto auto;
+    column-gap: 5vw;
+    row-gap: 2vw;
+}
+.space{
+    min-width: 3rem;
+}
+.modal_add_application .input_wrap {
+    display: flex;
+    flex-direction: column;
+}
+.modal_add_application .input_wrap label{
+    font-size: 1rem;
+    color: #777777;
+    font-weight: 600;
+    
+}
+.modal_add_application .input_wrap div{
+    margin-top: 0.5rem;
+}
+.modal_add_application .input_wrap .label_upload{
+    margin-left: 1rem;
 }

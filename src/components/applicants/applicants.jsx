@@ -1,8 +1,23 @@
 import "./applicants.css"
 import App_Item from "./app-item";
+import { useEffect, useState } from "react";
+import { getAllUsers } from "../../util/api";
 
 const Applicants = () => {
+    const [users,setUsers] = useState([]);
+    useEffect(()=>{
+        downloadUsers();
+    },[]);
 
+    const downloadUsers = async()=>{
+        try {
+            let res = await getAllUsers();
+            console.log(res);
+            setUsers(res);
+        } catch (error) {
+            console.log(e);
+        }
+    };
     return (
         <section className="applicants">
             <section className="app-header">
@@ -12,20 +27,17 @@ const Applicants = () => {
                 </div>
             </section>
             <section className="app-body">
-                <div className="app-body-header">
-                    <div className="app-titles" style={{width : "30%"}}>Name and Email ID</div>
-                    <div className="app-titles" style={{width : "10%"}}>Contact</div>
-                    <div className="app-titles">Application Status</div>
-                </div>
-                <App_Item />
-                <App_Item />
-                <App_Item />
-                <App_Item />
-                <App_Item />
-                <App_Item />
-                <App_Item />
-                <App_Item />
-                <App_Item />             
+                <table>
+                    <tr className="app-body-header">
+                        <th>&nbsp;</th>
+                        <th>Name and Email ID</th>
+                        <th>Contact</th>
+                    </tr>
+                    {users.map(user=><App_Item user={user}/>)}
+                </table>
+                
+                
+                
             </section>
         </section>
     )

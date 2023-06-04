@@ -8,10 +8,13 @@ export const AppContext = createContext({
   isLoading: false,
   setLoading: () => {},
   showAlert: () => {},
+  applicant: {},
+  setApplicant: () => {},
 });
 
 const AppContextProvider = ({ children }) => {
   const [isLoading, setLoading] = useState(false);
+  const [applicant, setApplicant] = useState({});
   const showAlert = (message, alertType) => {
     switch (alertType) {
       case AlertType.ERROR:
@@ -81,6 +84,8 @@ const AppContextProvider = ({ children }) => {
     showAlert,
     setLoading,
     isLoading,
+    applicant,
+    setApplicant,
   };
   return <AppContext.Provider value={values}>{children}</AppContext.Provider>;
 };
