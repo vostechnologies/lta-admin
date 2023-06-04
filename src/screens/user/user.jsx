@@ -298,7 +298,7 @@ const User = () => {
                               <img src= {Delete} alt="" style={{opacity:"0"}} />
                             </th>
                         </tr>
-                        <Uni_Item />
+                        {userApplications.map((application,i)=><Uni_Item key={i} application={application}/>)}
 
                   </table>
                   {/* <div className="app-body-header">
