@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getToken } from "./local";
 
-const baseUrl = `http://localhost:8001`
+const baseUrl = `https://api.letterstoabroad.com`
 ;export const adminLATClient = axios.create({
     baseURL: baseUrl
 })

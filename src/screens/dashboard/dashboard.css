@@ -82,6 +82,7 @@
     background-color: #FFF;
     filter: drop-shadow(0px 0px 2px #4444dd);
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }

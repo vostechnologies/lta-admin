@@ -27,4 +27,21 @@ export const validateToken = ()=>adminLATClient({
     method: "GET",
     url : `/auth/validateAdminToken`
   }).then(res=>res.data);
+  export const updateApplication = (id,body)=>adminLATClient({
+    url: `/application/updateApplication/${id}`,
+    method: "PATCH",
+    headers:{
+        "Content-Type": "multipart/form-data"
+    },
+    data:body
+}).then(res=>res.data);
+
+export const deleteApplicationApi = (id)=>adminLATClient({
+    url:`/application/deleteApplication/${id}`,
+    method:"DELETE"
+}).then(res=>res.data)
+export const getDocumentApi = (id)=>adminLATClient({
+    url:`/document/${id}`,
+    method:"GET"
+}).then(res=>res.data)
   

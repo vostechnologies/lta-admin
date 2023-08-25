@@ -4,12 +4,16 @@ import Add from "../../assets/svg/Frame 2.svg"
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Applicants from "../../components/applicants/applicants";
+import { useContext } from "react";
+import { AppContext } from "../../context/app_context";
 // import "./profile.css";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [showOverlay, setOverlay] = useState(false);
-  const [activeTab, setActiveTab] = useState("1"); // ["dashboard", "profile", "documents", "settings"
+  const {user}
+ = useContext(AppContext)  
+ const [activeTab, setActiveTab] = useState("1"); // ["dashboard", "profile", "documents", "settings"
 
   const handleActiveTab = (tab) => {
     setActiveTab(tab);
@@ -39,9 +43,11 @@ const Dashboard = () => {
             Admin
             {showOverlay ? (
               <div className="profile_overlay">
+                
                 <div
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: "pointer",color: "white",backgroundColor: "red", borderRadius: "6px",padding: "4px" }}
                   onClick={() => {
+                    localStorage.clear();
                     navigate("/");
                   }}
                 >

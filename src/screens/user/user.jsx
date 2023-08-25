@@ -27,17 +27,17 @@ import {
 import { ArrowForwardIcon, AttachmentIcon } from "@chakra-ui/icons";
 import { useContext } from "react";
 import { AppContext } from "../../context/app_context";
-import { createApplication, getApplicationsOfUser } from "../../util/api";
+import { createApplication, getApplicationsOfUser, getDocumentApi } from "../../util/api";
 import { useMemo } from "react";
 
 const User = () => {
   const navigate = useNavigate();
   const [showOverlay, setOverlay] = useState(false);
-  const [activeTab, setActiveTab] = useState("1");
+  const [activeTab, setActiveTab] = useState("2");
   const [degree, setDegree] = useState("1");
   const [intake, setIntake] = useState("1");
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { applicant } = useContext(AppContext);
+  const { applicant,setApplicant } = useContext(AppContext);
   const [applicationFile, setApplicationFile] = useState();
   const [admissionFile, setAdmissionFile] = useState();
   const [logoFile, setLogoFile] = useState();
@@ -46,12 +46,36 @@ const User = () => {
   const [applicationCheck,setApplicationCheck] = useState(false);
   const [userApplications,setUserApplications] = useState([]);
 
+  const [docs,setDocs] = useState({});
   const handleActiveTab = (tab) => {
     setActiveTab(tab);
   };
-  const downloadApplications = async()=>{
+  useEffect(()=>{
+    console.log(`------- Applicant ----------`)
+    console.log(applicant);
+
+    if(applicant?.username){
+      localStorage.setItem("APPLICANT",JSON.stringify(applicant));
+      downloadApplications(applicant);
+      downloadDocs(applicant);
+    }
+  },[applicant]);
+
+  const downloadDocs = async(applicant)=>{
+    let res = await getDocumentApi(applicant?._id);
+    console.log("----------------------",res)
+    setDocs(res);
+  };
+  useEffect(()=>{
+    if(!applicant?.username){
+      let _application = localStorage.getItem("APPLICANT")
+      _application = JSON.parse(_application);
+      setApplicant(_application);
+    }
+  },[]);
+  const downloadApplications = async(_applicant)=>{
     try {
-      let applications = await getApplicationsOfUser(applicant._id);
+      let applications = await getApplicationsOfUser(_applicant._id);
      // applications = applications.revesre();
       setUserApplications(applications);
     } catch (error) {
@@ -61,9 +85,9 @@ const User = () => {
   useEffect(()=>{
     console.log(userApplications);
   },[userApplications]);
-  useEffect(()=>{
-    downloadApplications();
-  },[]);
+
+
+
 
   const onChangeForm = ({ target }) => {
     const { name, value } = target;
@@ -107,8 +131,11 @@ const User = () => {
     try {
       let _applicationCreateResponse = await createApplication(formData);
       console.log(_applicationCreateResponse);
+      onClose();
+      downloadApplications();
     } catch (error) {
       console.log(error);
+      onClose();
     }
   }
   return (
@@ -298,7 +325,7 @@ const User = () => {
                               <img src= {Delete} alt="" style={{opacity:"0"}} />
                             </th>
                         </tr>
-                        {userApplications.map((application,i)=><Uni_Item key={i} application={application}/>)}
+                        {userApplications.map((application,i)=><Uni_Item key={i} onRefresh={downloadApplications} application={application}/>)}
 
                   </table>
                   {/* <div className="app-body-header">
@@ -318,6 +345,24 @@ const User = () => {
                   <Uni_Item />
                   <Uni_Item /> */}
                 </section>
+              </section>
+            </div>
+            <div
+              className="applicants-container"
+              style={{ display: activeTab === "3" ? "flex" : "none" }}
+            >
+              <section className="docs_section">
+                  {docs&&docs.length>0&&docs.map((doc,i)=>{
+                    let meta = JSON.parse(doc?.meta||"{}");
+                    return <div className="card" key={i}>
+                      <div className="details">{Object.keys(meta).map((key,j)=>{
+                        return <div key={j}>
+                          {key.toUpperCase()}: {meta[key]}
+                        </div>
+                      })}</div>
+                      <a href={doc.docUrl}>DOWNLOAD</a>
+                    </div>
+                  })}
               </section>
             </div>
           </div>

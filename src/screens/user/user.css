@@ -266,3 +266,35 @@
     background: #8764DE;
     border-radius: 12px;
 }
+.docs_section{
+    display: flex;
+    flex-wrap: wrap;
+}
+.docs_section .card{
+    width: 320px;
+    padding: 1rem;
+    margin: 1rem;
+    background: #d7d9d9;
+    border-radius: 18px;
+}
+.docs_section .details{
+    margin-bottom: 1rem;
+}
+.docs_section a{
+    padding: 0.5rem;
+    background-color: #896AD6;
+    color: #d7d9d9;
+    border-radius: 5px;
+    margin-top: 3rem;
+    text-transform: capitalize;
+    text-decoration: none;
+}
+.docs_section a:hover{
+    padding: 0.5rem;
+    background-color: #896AD6;
+    color: #d7d9d9;
+    border-radius: 5px;
+    margin-top: 3rem;
+    text-transform: capitalize;
+    text-decoration: none;
+}

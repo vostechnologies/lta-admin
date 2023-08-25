@@ -17,9 +17,9 @@
 }
 #row-item .second{
     background: #FFFFFF;
-    border: 1px solid #D3DBDF;
     border-radius: 8px;
     padding: 2px 16px;
+    width: 10rem;
 }
 #row-item select{
     display: flex;
