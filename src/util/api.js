@@ -44,4 +44,8 @@ export const getDocumentApi = (id)=>adminLATClient({
     url:`/document/${id}`,
     method:"GET"
 }).then(res=>res.data)
+export const getUserInfo = (userId)=>adminLATClient({
+    url: `/auth/userInfo/${userId}`,
+    method: "GET"
+}).then(res=>res.data);
   

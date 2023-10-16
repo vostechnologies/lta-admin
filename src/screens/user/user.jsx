@@ -6,7 +6,7 @@ import dp from "../../assets/svg/Rectangle 2601.svg";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Uni_Item from "../../components/university/uni_item";
-import Delete from "../../assets/svg/Delete_icon.svg"
+import Delete from "../../assets/svg/Delete_icon.svg";
 
 import {
   Button,
@@ -27,8 +27,15 @@ import {
 import { ArrowForwardIcon, AttachmentIcon } from "@chakra-ui/icons";
 import { useContext } from "react";
 import { AppContext } from "../../context/app_context";
-import { createApplication, getApplicationsOfUser, getDocumentApi } from "../../util/api";
+import {
+  createApplication,
+  getApplicationsOfUser,
+  getDocumentApi,
+  getUserInfo,
+} from "../../util/api";
 import { useMemo } from "react";
+import { useQuery } from "react-query";
+import { queryClient } from "../../App";
 
 const User = () => {
   const navigate = useNavigate();
@@ -37,74 +44,97 @@ const User = () => {
   const [degree, setDegree] = useState("1");
   const [intake, setIntake] = useState("1");
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { applicant,setApplicant } = useContext(AppContext);
+  const { applicant, setApplicant } = useContext(AppContext);
   const [applicationFile, setApplicationFile] = useState();
   const [admissionFile, setAdmissionFile] = useState();
   const [logoFile, setLogoFile] = useState();
-  const [form, setForm] = useState({});
-  const [inTakeCheck,setInTakeCheck] = useState(false);
-  const [applicationCheck,setApplicationCheck] = useState(false);
-  const [userApplications,setUserApplications] = useState([]);
-
-  const [docs,setDocs] = useState({});
+  const [form, setForm] = useState({
+    applicationStage: "Pending"
+  });
+  const fetchDataFunction = async()=>{
+    let _application = localStorage.getItem("APPLICANT");
+      _application = JSON.parse(_application);
+      setApplicant(_application);
+    const {_id} = _application;
+    let response = await getUserInfo(_id);
+    console.log(response);
+    return response;
+  };
+  const [inTakeCheck, setInTakeCheck] = useState(false);
+  const [applicationCheck, setApplicationCheck] = useState(false);
+  const [userApplications, setUserApplications] = useState([]);
+  const { data, error, isLoading } = useQuery('info', fetchDataFunction);
+ 
+  useEffect(()=>{
+    console.log(data, error, isLoading);
+  },[data, error, isLoading]);
+  const [docs, setDocs] = useState({});
   const handleActiveTab = (tab) => {
     setActiveTab(tab);
   };
-  useEffect(()=>{
-    console.log(`------- Applicant ----------`)
+  useEffect(() => {
+    if (!isOpen) {
+      clearFiles();
+    }
+  }, [isOpen]);
+  useEffect(() => {
+    console.log(`------- Applicant ----------`);
     console.log(applicant);
 
-    if(applicant?.username){
-      localStorage.setItem("APPLICANT",JSON.stringify(applicant));
+    if (applicant?.username) {
+      localStorage.setItem("APPLICANT", JSON.stringify(applicant));
       downloadApplications(applicant);
       downloadDocs(applicant);
+      queryClient.invalidateQueries("info");
     }
-  },[applicant]);
+  }, [applicant]);
+  useEffect(()=>{
+    let _application = localStorage.getItem("APPLICANT");
+      _application = JSON.parse(_application);
+      setApplicant(_application);
+      queryClient.invalidateQueries("info");
+      
+  },[activeTab]);
 
-  const downloadDocs = async(applicant)=>{
+  const downloadDocs = async (applicant) => {
     let res = await getDocumentApi(applicant?._id);
-    console.log("----------------------",res)
+    console.log("----------------------", res);
     setDocs(res);
   };
-  useEffect(()=>{
-    if(!applicant?.username){
-      let _application = localStorage.getItem("APPLICANT")
+  useEffect(() => {
+    if (!applicant?.username) {
+      let _application = localStorage.getItem("APPLICANT");
       _application = JSON.parse(_application);
       setApplicant(_application);
     }
-  },[]);
-  const downloadApplications = async(_applicant)=>{
+  }, []);
+  const downloadApplications = async (_applicant) => {
     try {
       let applications = await getApplicationsOfUser(_applicant._id);
-     // applications = applications.revesre();
+      // applications = applications.revesre();
       setUserApplications(applications);
-    } catch (error) {
-      
-    }
-  }
-  useEffect(()=>{
+    } catch (error) {}
+  };
+  useEffect(() => {
     console.log(userApplications);
-  },[userApplications]);
-
-
-
+  }, [userApplications]);
 
   const onChangeForm = ({ target }) => {
     const { name, value } = target;
     setForm({ ...form, [name]: value });
   };
- 
+
   const onChangeCheck = ({ target }) => {
     const { name, checked } = target;
     switch (name) {
-      case 'intake':
-          setForm({...form,[name]:checked?"Winter":"Summer"})
+      case "intake":
+        setForm({ ...form, [name]: checked ? "Winter" : "Summer" });
         break;
-        case 'applicationStage':
-          setForm({...form,[name]:checked?"Pending":"Submitted"})
+      case "applicationStage":
+        setForm({ ...form, [name]: checked ? "Pending" : "Submitted" });
         break;
     }
-    console.log(name,checked)
+    console.log(name, checked);
   };
   const onChangeFileAdmission = ({ target }) => {
     const { files } = target;
@@ -118,26 +148,32 @@ const User = () => {
     const { files } = target;
     setLogoFile(files[0]);
   };
-  const onSubmit = async()=>{
+  const clearFiles = () => {
+    setApplicationFile(null);
+    setAdmissionFile(null);
+    setLogoFile(null);
+  };
+  const onSubmit = async () => {
     let formData = new FormData();
-    formData.append("admissionStatus","Pending");
-    formData.append("applicationStage",form.applicationStage);
-    formData.append("course",form.course);
-    formData.append("universityName",form.universityName);
-    formData.append("logo",logoFile);
-    formData.append("userId",applicant._id);
-    formData.append("application",applicationFile);
-    formData.append("response",admissionFile);
+    formData.append("admissionStatus", "Pending");
+    formData.append("applicationStage", form.applicationStage);
+    formData.append("course", form.course);
+    formData.append("universityName", form.universityName);
+    formData.append("logo", logoFile);
+    formData.append("userId", applicant._id);
+    formData.append("application", applicationFile);
+    formData.append("response", admissionFile);
     try {
       let _applicationCreateResponse = await createApplication(formData);
       console.log(_applicationCreateResponse);
       onClose();
-      downloadApplications();
+      downloadApplications(applicant);
+      clearFiles();
     } catch (error) {
       console.log(error);
       onClose();
     }
-  }
+  };
   return (
     <section
       className="main_wrapper"
@@ -146,7 +182,14 @@ const User = () => {
       }}
     >
       <nav className="nav_container">
-        <img src={LTALogo} alt="Logo main" />
+        <img
+          src={LTALogo}
+          alt="Logo main"
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            navigate("/dashboard");
+          }}
+        />
         <div className="right_nav">
           <input type="text" placeholder="Search" />
           <div className="profile">
@@ -230,6 +273,21 @@ const User = () => {
                 Preference
               </span>
             </div>
+            {isLoading?<div>Loading...</div>:<div
+              className="applicants-container"
+              style={{ display: activeTab === "1" ? "flex" : "none",width: "100%",justifyContent: "center",alignItems: "flex-start",minHeight: "100px",maxHeight: "100vw",flexWrap: "wrap",marginTop: "3rem" }}
+            >
+               <div style={{width: "400px",marginBottom: "2rem",marginLeft: "1rem"}}><b>Name:&nbsp;</b>{`${data?.name_first} ${data?.name_last}`}</div>
+               <div style={{width: "400px",marginBottom: "2rem"}}><b>Address:&nbsp;</b>{`${data?.addresses?.join(" | ")}`}</div>
+               <div style={{width: "400px",marginBottom: "2rem"}}><b>Expected intake:&nbsp;</b>{`${data?.expectedIntake}`}</div>
+               <div style={{width: "400px",marginBottom: "2rem"}}><b>Type of application:&nbsp;</b>{`${data?.typeOfApplication}`}</div>
+               <div style={{width: "400px",marginBottom: "2rem"}}><b>Gender:&nbsp;</b>{`${data?.gender}`}</div>
+               <div style={{width: "400px",marginBottom: "2rem"}}><b>Date of birth:&nbsp;</b>{`${data?.dob}`}</div>
+               <div style={{width: "400px",marginBottom: "2rem"}}><b>Email:&nbsp;</b>{`${data?.username}`}</div>
+               <div style={{width: "400px",marginBottom: "2rem"}}><b>Phone:&nbsp;</b>{`${data?.phone}`}</div>
+               <div style={{width: "400px",marginBottom: "2rem"}}><b>Citizenship:&nbsp;</b>{`${data?.citizenship}`}</div>
+               <div style={{width: "400px"}}>&nbsp;</div>
+              </div>}
 
             <div
               className="applicants-container"
@@ -315,18 +373,25 @@ const User = () => {
                 </section>
                 <section className="app-body">
                   <table className="applications-container">
-                        <tr className="table-headers">
-                            <th className="first">University Name & Course</th>
-                            <th className="second">Application Status</th>
-                            <th className="third">Application Letter</th>
-                            <th className="fourth">Admission Status</th>
-                            <th className="fifth">Admission or Rejection Letter</th>
-                            <th>
-                              <img src= {Delete} alt="" style={{opacity:"0"}} />
-                            </th>
-                        </tr>
-                        {userApplications.map((application,i)=><Uni_Item key={i} onRefresh={downloadApplications} application={application}/>)}
-
+                    <tr className="table-headers">
+                      <th className="first">University Name & Course</th>
+                      <th className="second">Application Status</th>
+                      <th className="third">Application Letter</th>
+                      <th className="fourth">Admission Status</th>
+                      <th className="fifth">Admission or Rejection Letter</th>
+                      <th>
+                        <img src={Delete} alt="" style={{ opacity: "0" }} />
+                      </th>
+                    </tr>
+                    {userApplications.map((application, i) => (
+                      <Uni_Item
+                        key={i}
+                        onRefresh={() => {
+                          downloadApplications(applicant);
+                        }}
+                        application={application}
+                      />
+                    ))}
                   </table>
                   {/* <div className="app-body-header">
                     <div className="app-titles">University Name & Course</div>
@@ -351,25 +416,130 @@ const User = () => {
               className="applicants-container"
               style={{ display: activeTab === "3" ? "flex" : "none" }}
             >
-              <section className="docs_section">
-                  {docs&&docs.length>0&&docs.map((doc,i)=>{
-                    let meta = JSON.parse(doc?.meta||"{}");
-                    return <div className="card" key={i}>
-                      <div className="details">{Object.keys(meta).map((key,j)=>{
-                        return <div key={j}>
-                          {key.toUpperCase()}: {meta[key]}
-                        </div>
-                      })}</div>
-                      <a href={doc.docUrl}>DOWNLOAD</a>
-                    </div>
-                  })}
-              </section>
+              <div className="docs_wrapper">
+                <section className="docs_section_main">
+                  <span>Education</span>
+                  <br />
+                  <div className="docs_section">
+                    {docs &&
+                      docs.length > 0 &&
+                      docs
+                        ?.filter(
+                          (doc) => doc?.doctype == "Education"
+                        )
+                        ?.map((doc, i) => {
+                          let meta = JSON.parse(doc?.meta || "{}");
+                          return (
+                            <div className="card" key={i}>
+                              <div className="details">
+                                {Object.keys(meta).map((key, j) => {
+                                  return (
+                                    <div key={j}>
+                                      {key.toUpperCase()}: {meta[key]}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                              <a href={doc.docUrl}>DOWNLOAD</a>
+                            </div>
+                          );
+                        })}
+                  </div>
+                </section>
+               
+                <section className="docs_section_main">
+                  <span>Language</span>
+                  <br />
+                  <div className="docs_section">
+                    {docs &&
+                      docs.length > 0 ?
+                      docs
+                        ?.filter(
+                          (doc) => doc?.doctype?.toUpperCase() == "LANGUAGE"
+                        )
+                        ?.map((doc, i) => {
+                          let meta = JSON.parse(doc?.meta || "{}");
+                          return (
+                            <div className="card" key={i}>
+                              <div className="details">
+                                {Object.keys(meta).map((key, j) => {
+                                  return (
+                                    <div key={j}>
+                                      {key.toUpperCase()}: {meta[key]}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                              <a href={doc.docUrl}>DOWNLOAD</a>
+                            </div>
+                          );
+                        }):<span>'No documents uploaded.'</span>}
+                  </div>
+                </section>
+                <section className="docs_section_main">
+                  <span>Work Experience</span>
+                  <br />
+                  <div className="docs_section">
+                    {docs &&
+                      docs.length > 0 ?
+                      docs
+                        ?.filter(
+                          (doc) => doc?.doctype?.toUpperCase() == "WORK"
+                        )
+                        ?.map((doc, i) => {
+                          let meta = JSON.parse(doc?.meta || "{}");
+                          return (
+                            <div className="card" key={i}>
+                              <div className="details">
+                                {Object.keys(meta).map((key, j) => {
+                                  return (
+                                    <div key={j}>
+                                      {key.toUpperCase()}: {meta[key]}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                              <a href={doc.docUrl}>DOWNLOAD</a>
+                            </div>
+                          );
+                        }):'No documents uploaded.'}
+                  </div>
+                </section>
+
+                <section className="docs_section_main">
+                  <span>General</span>
+                  <div className="docs_section">
+                    {docs &&
+                      docs?.length > 0 &&
+                      docs
+                        .filter((doc) => !doc.type)
+                        .map((doc, i) => {
+                          let meta = JSON.parse(doc?.meta || "{}");
+                          return (
+                            <div className="card" key={i}>
+                              <div className="details">
+                                {Object.keys(meta).map((key, j) => {
+                                  return (
+                                    <div key={j}>
+                                      {key.toUpperCase()}: {meta[key]}
+                                    </div>
+                                  );
+                                })}
+                                {doc.doctype}
+                              </div>
+                              <a href={doc.docUrl}>DOWNLOAD</a>
+                            </div>
+                          );
+                        })}
+                  </div>
+                </section>
+              </div>
             </div>
           </div>
-          <div className="profile-buttons">
+          {/* <div className="profile-buttons">
             <button className="btn-sec">Cancel</button>
             <button className="btn-pri">Save</button>
-          </div>
+          </div> */}
         </div>
       </div>
       <Modal isOpen={isOpen} onClose={onClose} size="6xl">
@@ -401,7 +571,12 @@ const User = () => {
               </div>
               <div className="input_wrap">
                 <label>Course name</label>
-                <Input placeholder="Course name"  onChange={onChangeForm} name="course" size="lg" />
+                <Input
+                  placeholder="Course name"
+                  onChange={onChangeForm}
+                  name="course"
+                  size="lg"
+                />
               </div>
               <div className="input_wrap">
                 <label>Upload application document</label>
@@ -413,8 +588,16 @@ const User = () => {
                   style={{ display: "none" }}
                 />
                 <label htmlFor="application">
-                  <AttachmentIcon color="purple"/>
-                  <span className="label_upload">Upload document.</span>
+                  <AttachmentIcon color="purple" />
+                  <span className="label_upload">
+                    {!applicationFile ? (
+                      <span className="upload_label">{`Upload document.`}</span>
+                    ) : (
+                      <span className="upload_label_black">
+                        {applicationFile.name}
+                      </span>
+                    )}
+                  </span>
                 </label>
               </div>
               <div className="input_wrap">
@@ -427,8 +610,16 @@ const User = () => {
                   style={{ display: "none" }}
                 />
                 <label htmlFor="response">
-                <AttachmentIcon color="purple"/>
-                  <span className="label_upload">Upload document.</span>
+                  <AttachmentIcon color="purple" />
+                  <span className="label_upload">
+                    {admissionFile ? (
+                      <span className="upload_label_black">
+                        {admissionFile.name}
+                      </span>
+                    ) : (
+                      <span className="upload_label">{`Upload document.`}</span>
+                    )}
+                  </span>
                 </label>
               </div>
               <div className="input_wrap">
@@ -441,11 +632,19 @@ const User = () => {
                   style={{ display: "none" }}
                 />
                 <label htmlFor="logo">
-                <AttachmentIcon color="purple"/>
-                  <span className="label_upload">Upload image.</span>
+                  <AttachmentIcon color="purple" />
+                  <span className="label_upload">
+                    {logoFile ? (
+                      <span className="upload_label_black">
+                        {logoFile.name}
+                      </span>
+                    ) : (
+                      <span className="upload_label">{`Upload image.`}</span>
+                    )}
+                  </span>
                 </label>
               </div>
-              <div className="input_wrap">
+              {/* <div className="input_wrap">
                 <label>Intake</label>
                 <div>
                   <label>Summer</label>
@@ -454,8 +653,8 @@ const User = () => {
                   <span className="space">&nbsp;</span>
                   <label className="space">Winter</label>
                 </div>
-              </div>
-              <div className="input_wrap">
+              </div> */}
+              {/* <div className="input_wrap">
                 <label>Application type</label>
                 <Select
                   placeholder="Select application type"
@@ -468,14 +667,19 @@ const User = () => {
                   <option value="Bachelors">Bachelors</option>
                   <option value="FSJ">FSJ</option>
                 </Select>
-              </div>
+              </div> */}
               <div className="input_wrap">
                 <label>Application status</label>
 
                 <div>
                   <label>Pending</label>
                   <span className="space">&nbsp;</span>
-                  <Switch colorScheme="purple" name="applicationStage" onChange={onChangeCheck} id="intake_one" />
+                  <Switch
+                    colorScheme="purple"
+                    name="applicationStage"
+                    onChange={onChangeCheck}
+                    id="intake_one"
+                  />
                   <span className="space">&nbsp;</span>
                   <label className="space">Applied</label>
                 </div>

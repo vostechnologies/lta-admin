@@ -298,3 +298,18 @@
     text-transform: capitalize;
     text-decoration: none;
 }
+.upload_label{
+    color: #288CEF;
+}
+.upload_label_black{
+    color: black;
+}
+.docs_wrapper,.docs_section_main{
+    display: flex;
+    flex-direction: column;
+}
+.docs_section_main > span{
+    font-weight: bold;
+    padding-block: 2rem;
+}
+

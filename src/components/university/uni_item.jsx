@@ -7,9 +7,10 @@ import { Select } from "@chakra-ui/react";
 import { deleteApplicationApi, updateApplication } from "../../util/api";
 
 const Uni_Item = ({ application,onRefresh }) => {
-  const { _id, universityName, course, applicationStage, admissionStatus } =
+  const { _id, universityName, course, applicationStage, admissionStatus,universityLogo, applicationDownload, offerOrRejectionUrl } =
     application;
   const [form, setForm] = useState({});
+  const [file,setFile] = useState();
   const file1Ref = useRef(null);
   const file2Ref = useRef(null);
 
@@ -57,6 +58,7 @@ const Uni_Item = ({ application,onRefresh }) => {
 	try {
 		let form = new FormData();
 		form.append("application",files[0]);
+    setFile(files[0]);
 		let response = await updateApplication(_id,form);
 		console.log(response);
 		onRefresh();
@@ -80,7 +82,7 @@ const Uni_Item = ({ application,onRefresh }) => {
     <tr className="row-styling" id="row-item">
       <td className="first">
         <div className="item-img-div">
-          <img src={dp} alt="" />
+          <img src={universityLogo||dp} alt="" />
         </div>
         <div className="item-details">
           <p className="item-name">{universityName}</p>
@@ -94,7 +96,7 @@ const Uni_Item = ({ application,onRefresh }) => {
         </Select>
       </td>
       <td className="third">
-        <label htmlFor={`application${_id}`}>Upload Here</label>
+        <label htmlFor={`application${_id}`}>{!applicationDownload?<span className="upload_label">`Upload Here`</span> :applicationDownload.split("/")[applicationDownload.split("/").length-1]}</label>
         <input type="file" style={{display: "none" }} id={`application${_id}`} onChange={updateApplicationFile}/>
       </td>
       <td className="fourth">
@@ -105,7 +107,7 @@ const Uni_Item = ({ application,onRefresh }) => {
         </Select>
       </td>
       <td className="fifth">
-        <label htmlFor={`admission${_id}`}>Upload Here</label>
+        <label htmlFor={`admission${_id}`}>{!offerOrRejectionUrl?<span className="upload_label">`Upload Here`</span> :offerOrRejectionUrl.split("/")[offerOrRejectionUrl.split("/").length-1]}</label>
         <input type="file" style={{ display: "none" }} id={`admission${_id}`}  onChange={updateAdmissionFile}/>
       </td>
       <td>

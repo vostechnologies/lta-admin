@@ -1,37 +1,60 @@
-#row-item{
-    background: #FFFFFF;
-    border-width: 1px 1px 0px 1px;
-    border-style: solid;
-    border-color: rgba(81, 73, 101, 0.1);
-    border-radius: 0px;
-    padding: 8px 12px;display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding: 16px 12px;
-    gap: 24px;
-    isolation: isolate;
+#row-item {
+  background: #ffffff;
+  border-width: 1px 1px 0px 1px;
+  border-style: solid;
+  border-color: rgba(81, 73, 101, 0.1);
+  border-radius: 0px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 16px 12px;
+  gap: 24px;
+  isolation: isolate;
 }
-#row-item .first{
-    display: flex;
-    gap: 12px;
+#row-item .first {
+  display: flex;
+  gap: 12px;
 }
-#row-item .second{
-    background: #FFFFFF;
-    border-radius: 8px;
-    padding: 2px 16px;
-    width: 10rem;
+#row-item .second {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 2px 16px;
+  width: 10rem;
 }
-#row-item select{
-    display: flex;
-    gap: 12px;
-    width: 100%;
-    font-family: 'Inter';
-    font-style: normal;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 15px;
-    color: #35465A;
-    padding: 4px 0px;
+#row-item select {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 15px;
+  color: #35465a;
+  padding: 4px 0px;
+}
+.item-img-div {
+  max-width: 48px;
+  max-height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+.item-img-div img {
+  width: 50px;
+  height: 50px;
+}
+.upload_label {
+  color: #288cef;
+}
+.truncate-two-lines {
+  white-space: nowrap; /* Prevent text from wrapping to the next line */
+  overflow: hidden; /* Hide any overflowing content */
+  text-overflow: ellipsis; /* Display ellipsis (...) when text overflows */
+  display: -webkit-box; /* Use the -webkit-box for compatibility */
+  -webkit-line-clamp: 2; /* Limit to two lines of text */
+  -webkit-box-orient: vertical; /* Arrange content vertically */
+  max-width: 100px; /* Ensure it doesn't expand beyond its container width */px
 }
 /* #row-item option[value= "Approved"]{
     background-color: #35465A;
