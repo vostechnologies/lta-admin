@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import dp from "../../assets/svg/Rectangle 2601.svg";
 import { useContext } from "react";
 import { AppContext } from "../../context/app_context";
+import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
+
 
 const App_Item = ({ user }) => {
     const {setApplicant} = useContext(AppContext);
@@ -21,24 +23,32 @@ const App_Item = ({ user }) => {
   } = user;
   const Navigate = useNavigate();
   return (
-    <tr
-      className="user_listing_row"
-      onClick={() => {
-        setApplicant(user);
-        Navigate("/user");
-      }}
-    >
-      <td className="dp_wrapper_cell">
+    <tr className="row-styling" id="row-item" onClick={() => {
+          setApplicant(user);
+          Navigate("/user");
+        }}>
+    <td className="first">
+      <div className="item-img-div">
         <img src={profile_image || dp} alt="" />
-      </td>
-      <td>
-        <p className="item-name">{`${name_first} ${name_last}`}</p>
-        <p className="item-email">{username}</p>
-      </td>
-      <td>
-        <p className="item-contact">{phone}</p>
-      </td>
-    </tr>
+      </div>
+      <div className="item-details">
+        <p className="item-name">{name_first && name_last ? `${name_first} ${name_last}`: "--"}</p>
+        <p className="item-email">{username ? username : "-"}</p>
+      </div>
+    </td>
+    <td className="second">
+        <p className="item-contact">{phone ? phone : "-"}</p>
+    </td>
+    <td className="third">
+    <div className="icon-details">
+        <p className="item-name"><EditIcon boxSize={5} color={"grey"}/></p>
+        <p className="item-email"><DeleteIcon boxSize={5} color={"grey"}/></p>
+      </div>
+    </td>
+  </tr>
+
+
+
     // <div className="app-body-content">
     //   <div className="app-body-item">
     //     <div

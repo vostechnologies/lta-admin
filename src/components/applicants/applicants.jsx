@@ -1,4 +1,5 @@
 import "./applicants.css"
+import "../university/uni_item.css"
 import App_Item from "./app-item";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -27,21 +28,18 @@ const Applicants = () => {
             <section className="app-header">
                 <p>Applicants</p>
                 <div className="app-search">
-                    <input type="text" placeholder="Search applicants" />
+                    <input type="text" placeholder="Search Applicants" />
                 </div>
             </section>
             <section className="app-body">
-                <table>
-                    <tr className="app-body-header" onClick={()=>{Navigate("/user")}}>
-                        <th>&nbsp;</th>
-                        <th>Name and Email ID</th>
-                        <th>Contact</th>
+                <table className="applications-container">
+                    <tr className="table-headers">
+                        <th className="first">Name and Email Id</th>
+                        <th className="second">Contact</th>
+                        <th className="third">Actions</th>
                     </tr>
                     {users.map((user,i)=><App_Item key={i} user={user}/>)}
                 </table>
-                
-                
-                
             </section>
         </section>
     )
